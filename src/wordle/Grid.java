@@ -1,4 +1,6 @@
 package wordle;
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.util.BitSet;
 import java.util.Iterator;
@@ -12,6 +14,7 @@ public class Grid implements Iterable<Cell>{
     String wordToGuess;
     boolean gameFinished;
     SQLiteConnectionManager wordleDatabaseConnection;
+    int correctConseqGuess;
     
     public Grid(int rows, int wordLength, SQLiteConnectionManager sqlConn){
         cells = new Cell[rows][wordLength];
@@ -28,6 +31,7 @@ public class Grid implements Iterable<Cell>{
         wordToGuess = "";
         gameFinished = false;
         wordleDatabaseConnection = sqlConn;
+        correctConseqGuess = 0;
     }
 
     void setWord(String word){
@@ -35,6 +39,15 @@ public class Grid implements Iterable<Cell>{
     }
 
     public void paint(Graphics g, int width, int height) {
+        g.setFont(new Font("Arial", Font.PLAIN, 15));      
+        g.setColor(Color.blue);
+        if(gameFinished) {
+            g.drawString("Correct word was: ", width - (width/6 * 2),50);
+            g.drawString(wordToGuess, width - (width/6 * 2),70);
+        } else {
+            g.drawString("Keep guessing a word!", width - (width/6 * 2),50);
+        }
+        g.drawString("Win Streak!: " + String.valueOf(correctConseqGuess), width - (width/6 * 2), 100);
         doToEachCell((Cell c) -> c.paint(g, width, height));
     }
 
@@ -96,6 +109,7 @@ public class Grid implements Iterable<Cell>{
                         cells[activeRow][i].setState(3);
                     }
                     gameFinished = true;
+                    correctConseqGuess++;
                 }else{
                     if(activeRow >= cells.length-1){
                         // run out of guesses to use
@@ -104,6 +118,7 @@ public class Grid implements Iterable<Cell>{
                             cells[activeRow][i].setState(4);
                         }
                         gameFinished = true;
+                        correctConseqGuess = 0;
                     }else{
                         //do stuff to highlihgt correct characters
                         applyHighlightingToCurrentRow();
