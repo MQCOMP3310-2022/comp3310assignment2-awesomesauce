@@ -14,6 +14,7 @@ public class App extends JFrame {
         boolean stageBuilt = false;
 
         public WordleGame(){
+            System.out.println("Hello Wordle Game Being Created!");
             setPreferredSize(new Dimension(330, 490));
             this.addKeyListener(this);
             board = new Board();
