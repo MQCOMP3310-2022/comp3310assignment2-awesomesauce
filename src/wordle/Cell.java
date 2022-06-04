@@ -1,3 +1,4 @@
+package wordle;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -69,6 +70,7 @@ public class Cell extends Rectangle{
                 backbgroundColor = Color.DARK_GRAY;
                 textColor = Color.WHITE;
                 isEmpty = true;
+                break;
         }
     }
 

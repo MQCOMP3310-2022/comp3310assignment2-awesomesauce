@@ -1,19 +1,21 @@
+package wordle;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.*;
+import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 
-public class App extends JFrame {
+public final class App extends JFrame {
 
     class WordleGame extends JPanel implements KeyListener{
         Board board;
         boolean stageBuilt = false;
 
-        public WordleGame(){
+        public WordleGame() throws SQLException{
             System.out.println("Hello Wordle Game Being Created!");
             setPreferredSize(new Dimension(330, 490));
             this.addKeyListener(this);
@@ -31,15 +33,23 @@ public class App extends JFrame {
         }
 
         @Override
-        public void keyPressed (KeyEvent e) {}    
+        public void keyPressed (KeyEvent e) {
+            //No content needed
+        }    
         
         @Override
         public void keyReleased (KeyEvent e) {
-            board.keyPressed(e);
+            try {
+                board.keyPressed(e);
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
         }    
 
         @Override
-        public void keyTyped (KeyEvent e) {}    
+        public void keyTyped (KeyEvent e) {
+            //No content needed
+        }    
 
     }
 
@@ -48,7 +58,7 @@ public class App extends JFrame {
         window.run();
     }
 
-    private App() {
+    private App() throws SQLException {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         WordleGame canvas = new WordleGame();
         this.setContentPane(canvas);

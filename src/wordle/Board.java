@@ -1,3 +1,4 @@
+package wordle;
 import java.awt.Graphics;
 import java.awt.event.*;
 import java.io.BufferedReader;
@@ -7,6 +8,7 @@ import java.io.IOException;
 // import java.sql.Connection;
 // import java.sql.DriverManager;
 // import java.sql.SQLException;
+import java.sql.SQLException;
 
 
 public class Board {
@@ -15,7 +17,7 @@ public class Board {
     int secretWordIndex;
     int numberOfWords;
 
-    public Board(){
+    public Board() throws SQLException{
         wordleDatabaseConnection = new SQLiteConnectionManager("words.db");
         int setupStage = 0;
 
@@ -70,7 +72,7 @@ public class Board {
         grid.paint(g);
     }    
 
-    public void keyPressed(KeyEvent e){
+    public void keyPressed(KeyEvent e) throws SQLException{
         System.out.println("Key Pressed! " + e.getKeyCode());
 
         if(e.getKeyCode() == KeyEvent.VK_ENTER){
