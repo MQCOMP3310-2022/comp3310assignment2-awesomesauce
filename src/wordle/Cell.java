@@ -78,21 +78,20 @@ public class Cell extends Rectangle{
         setCharacter(displayCharacter,cellState);
     }
 
-    void paint(Graphics g){
+    void paint(Graphics g, int width, int height){
         if(isActive){
             g.setColor(Color.LIGHT_GRAY);
         } else {
             g.setColor(backbgroundColor);
         }
-        
-        g.fillRect(x,y,size,size);
+        g.fillRect((int)((double)(x * width)/500),(int)((double)(y * height)/490), (int)((double)(size * width)/500), (int)((double)(size * height)/490));
         
         if(isActive){
             g.setColor(Color.YELLOW);
         } else {
             g.setColor(Color.BLACK);
         }
-        g.drawRect(x, y, size, size);
+        g.drawRect((int)((double)(x * width)/500),(int)((double)(y * height)/490), (int)((double)(size * width)/500), (int)((double)(size * height)/490));
         
         
         if(isActive){
@@ -101,10 +100,10 @@ public class Cell extends Rectangle{
             g.setColor(textColor);
         }
         
-        Font f = new Font("Arial", Font.PLAIN, 40);
+        Font f = new Font("Arial", Font.PLAIN, (int)((double)(40 * height)/490));
         FontMetrics metrics = g.getFontMetrics(f);
-        int drawXPos = x + ((size - metrics.stringWidth(""+displayCharacter))/2);
-        int drawYPos = y + ((size + metrics.getHeight())/2 - 10);
+        int drawXPos = (int)((double)(x * width)/500) + ((int)((double)(size * width)/500) - metrics.stringWidth(""+displayCharacter))/2;
+        int drawYPos = (int)((double)(y * height)/490) + ((int)((double)(size * height)/490) + metrics.getHeight())/2 - 10;
         
         g.setFont(f); 
         g.drawString(""+displayCharacter, drawXPos, drawYPos);
@@ -129,5 +128,12 @@ public class Cell extends Rectangle{
     public String toString(){
         return Integer.toString(col) + Integer.toString(row) + ":'" + displayCharacter + "'";
     }
+
+    public void setX(int width) {
+        x = width;
+    }
     
+    public void setY(int height) {
+        y = height;
+    }
 }

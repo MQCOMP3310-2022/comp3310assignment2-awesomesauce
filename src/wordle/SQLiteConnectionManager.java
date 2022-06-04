@@ -83,21 +83,26 @@ public class SQLiteConnectionManager {
      * Create the table structures (2 tables, wordle words and valid words)
      *
      * @return true if the table structures have been created.
+     * @throws SQLException
      */
-    public boolean createWordleTables() {
+    public boolean createWordleTables() throws SQLException {
         if (!"".equals(databaseURL)) {
-            try (Connection conn = DriverManager.getConnection(databaseURL);
-                    Statement stmt = conn.createStatement()) {
-                if (conn != null) {
-                    stmt.execute(wordleDropTableString);
-                    stmt.execute(wordleCreateString);
-                    stmt.execute(validWordsDropTableString);
-                    stmt.execute(validWordsCreateString);
-                    return true;
-                }
+            Connection conn = null;
+            Statement stmt = null;
+            try {
+                conn = DriverManager.getConnection(databaseURL);
+                stmt = conn.createStatement();
+                stmt.execute(wordleDropTableString);
+                stmt.execute(wordleCreateString);
+                stmt.execute(validWordsDropTableString);
+                stmt.execute(validWordsCreateString);
+                return true;
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
                 return false;
+            } finally {
+                conn.close();
+                stmt.close();
             }
 
         }
@@ -137,9 +142,12 @@ public class SQLiteConnectionManager {
         String sql = "SELECT word FROM validWords where id=" + index + ";";
         String result = "";
         ResultSet cursor = null;
-        try (Connection conn = DriverManager.getConnection(databaseURL);
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
             // pstmt.setInt(1, index);
+            conn = DriverManager.getConnection(databaseURL);
+            pstmt = conn.prepareStatement(sql);
             cursor = pstmt.executeQuery();
             if (cursor.next()) {
                 System.out.println("successful next curser sqlite");
@@ -149,6 +157,8 @@ public class SQLiteConnectionManager {
             System.out.println(e.getMessage());
         } finally {
             cursor.close();
+            conn.close();
+            pstmt.close();
         }
         System.out.println("getWordAtIndex===========================");
         System.out.println("sql: " + sql);
@@ -167,8 +177,11 @@ public class SQLiteConnectionManager {
     public boolean isValidWord(String guess) throws SQLException {
         String sql = "SELECT count(id) as total FROM validWords WHERE word like'" + guess + "';";
         ResultSet resultRows = null;
-        try (Connection conn = DriverManager.getConnection(databaseURL);
-                PreparedStatement stmt = conn.prepareStatement(sql)) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = DriverManager.getConnection(databaseURL);
+            stmt = conn.prepareStatement(sql);
             resultRows = stmt.executeQuery();
             int result = resultRows.getInt("total");
             while (resultRows.next()) {
@@ -181,6 +194,8 @@ public class SQLiteConnectionManager {
             return false;
         } finally {
             resultRows.close();
+            conn.close();
+            stmt.close();
         }
     }
 }

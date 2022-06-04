@@ -68,8 +68,8 @@ public class Board {
         grid.reset();
     }
 
-    void paint(Graphics g){
-        grid.paint(g);
+    void paint(Graphics g, int width, int height){
+        grid.paint(g, width, height);
     }    
 
     public void keyPressed(KeyEvent e) throws SQLException{

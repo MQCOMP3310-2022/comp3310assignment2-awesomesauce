@@ -16,8 +16,7 @@ public final class App extends JFrame {
         boolean stageBuilt = false;
 
         public WordleGame() throws SQLException{
-            System.out.println("Hello Wordle Game Being Created!");
-            setPreferredSize(new Dimension(330, 490));
+            setPreferredSize(new Dimension(500, 490));
             this.addKeyListener(this);
             board = new Board();
             stageBuilt = true;
@@ -28,7 +27,7 @@ public final class App extends JFrame {
         @Override
         public void paint(Graphics g) {
           if (stageBuilt && isVisible()) {
-            board.paint(g);
+            board.paint(g, getSize().width, getSize().height);
           }
         }
 

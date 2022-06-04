@@ -34,8 +34,8 @@ public class Grid implements Iterable<Cell>{
         wordToGuess = word;
     }
 
-    public void paint(Graphics g) {
-        doToEachCell((Cell c) -> c.paint(g));
+    public void paint(Graphics g, int width, int height) {
+        doToEachCell((Cell c) -> c.paint(g, width, height));
     }
 
     public void reset(){
