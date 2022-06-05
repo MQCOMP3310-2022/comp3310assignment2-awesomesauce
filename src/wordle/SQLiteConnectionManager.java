@@ -7,8 +7,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 public class SQLiteConnectionManager {
+
+    private static final Logger logger = Logger.getLogger(SQLiteConnectionManager.class.getName());
 
     // private Connection wordleDBConn = null;
     private String databaseURL = "";
@@ -47,13 +51,16 @@ public class SQLiteConnectionManager {
         try (Connection conn = DriverManager.getConnection(databaseURL)) {
             if (conn != null) {
                 DatabaseMetaData meta = conn.getMetaData();
-                System.out.println("The driver name is " + meta.getDriverName());
-                System.out.println("A new database has been created.");
-
+                if(logger.isLoggable(Level.INFO)) {
+                    logger.log(Level.INFO,"The driver name is " + meta.getDriverName());
+                    logger.log(Level.INFO,"A new database has been created.");
+                }
             }
 
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            if(logger.isLoggable(Level.WARNING)) {
+                logger.log(Level.WARNING,e.getMessage());
+            }
         }
     }
 
@@ -72,7 +79,9 @@ public class SQLiteConnectionManager {
                     return true;
                 }
             } catch (SQLException e) {
-                System.out.println(e.getMessage());
+                if(logger.isLoggable(Level.WARNING)) {
+                    logger.log(Level.WARNING,e.getMessage());
+                }
                 return false;
             }
         }
@@ -98,7 +107,9 @@ public class SQLiteConnectionManager {
                 stmt.execute(validWordsCreateString);
                 return true;
             } catch (SQLException e) {
-                System.out.println(e.getMessage());
+                if(logger.isLoggable(Level.WARNING)) {
+                    logger.log(Level.WARNING,e.getMessage());
+                }
                 return false;
             } finally {
                 conn.close();
@@ -126,9 +137,10 @@ public class SQLiteConnectionManager {
             pstmt.setString(2, word);
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            if(logger.isLoggable(Level.WARNING)) {
+                logger.log(Level.WARNING,e.getMessage());
+            }
         }
-
     }
 
     /**
@@ -150,19 +162,26 @@ public class SQLiteConnectionManager {
             pstmt = conn.prepareStatement(sql);
             cursor = pstmt.executeQuery();
             if (cursor.next()) {
-                System.out.println("successful next curser sqlite");
+                if(logger.isLoggable(Level.INFO)) {
+                    logger.log(Level.INFO, "successful next curser sqlite");
+                }
                 result = cursor.getString(1);
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            if(logger.isLoggable(Level.WARNING)) {
+                logger.log(Level.WARNING,e.getMessage());
+            }
         } finally {
             cursor.close();
             conn.close();
             pstmt.close();
         }
-        System.out.println("getWordAtIndex===========================");
-        System.out.println("sql: " + sql);
-        System.out.println("result: " + result);
+        if(logger.isLoggable(Level.INFO)) {
+            logger.log(Level.INFO,"getWordAtIndex===========================");
+            logger.log(Level.INFO,"sql: " + sql);
+            logger.log(Level.INFO,"result: " + result);
+        }
+
 
         return result;
     }
@@ -186,11 +205,15 @@ public class SQLiteConnectionManager {
             int result = resultRows.getInt("total");
             while (resultRows.next()) {
                 result = resultRows.getInt("total");
-                System.out.println("Total found:" + result);
+                if(logger.isLoggable(Level.INFO)) {
+                    logger.log(Level.INFO, "Total found:" + result);
+                }
             }
             return result >= 1;
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            if(logger.isLoggable(Level.WARNING)) {
+                logger.log(Level.WARNING,e.getMessage());
+            }
             return false;
         } finally {
             resultRows.close();

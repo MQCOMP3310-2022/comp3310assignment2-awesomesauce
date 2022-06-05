@@ -2,14 +2,29 @@ package wordle;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.*;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 
 public final class App extends JFrame {
+
+    static {
+        try {
+            LogManager.getLogManager().readConfiguration(new FileInputStream("resources/logger.properties"));
+        } catch (SecurityException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static final Logger logger = Logger.getLogger(App.class.getName());
 
     class WordleGame extends JPanel implements KeyListener{
         Board board;
@@ -74,9 +89,9 @@ public final class App extends JFrame {
             try {
                 Thread.sleep(20L - howLong);
             } catch (InterruptedException e) {
-                System.out.println("thread was interrupted, but who cares?");
+                logger.log(Level.WARNING,"thread was interrupted, but who cares?");
             } catch (IllegalArgumentException e) {
-                System.out.println("application can't keep up with framerate");
+                logger.log(Level.WARNING,"application can't keep up with framerate");
             }
         }
     }

@@ -5,6 +5,8 @@ import java.awt.Graphics;
 import java.util.BitSet;
 import java.util.Iterator;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 
 public class Grid implements Iterable<Cell>{
@@ -15,6 +17,8 @@ public class Grid implements Iterable<Cell>{
     boolean gameFinished;
     SQLiteConnectionManager wordleDatabaseConnection;
     int correctConseqGuess;
+
+    private static final Logger logger = Logger.getLogger(Grid.class.getName());
     
     public Grid(int rows, int wordLength, SQLiteConnectionManager sqlConn){
         cells = new Cell[rows][wordLength];
@@ -136,7 +140,9 @@ public class Grid implements Iterable<Cell>{
 
     void keyPressedLetter(char letter){
         if(!gameFinished){
-            System.out.println("grid keypress received letter: " + letter);
+            if(logger.isLoggable(Level.INFO)) {
+                logger.log(Level.INFO,"grid keypress received letter: " + letter);
+            }
             cells[activeRow][activeColumn].setCharacter(letter, 1);
             if(activeColumn < cells[activeRow].length -1){
                 //not last character
