@@ -1,3 +1,6 @@
+package wordle;
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.util.BitSet;
 import java.util.Iterator;
@@ -11,6 +14,7 @@ public class Grid implements Iterable<Cell>{
     String wordToGuess;
     boolean gameFinished;
     SQLiteConnectionManager wordleDatabaseConnection;
+    int correctConseqGuess;
     
     public Grid(int rows, int wordLength, SQLiteConnectionManager sqlConn){
         cells = new Cell[rows][wordLength];
@@ -27,14 +31,24 @@ public class Grid implements Iterable<Cell>{
         wordToGuess = "";
         gameFinished = false;
         wordleDatabaseConnection = sqlConn;
+        correctConseqGuess = 0;
     }
 
     void setWord(String word){
         wordToGuess = word;
     }
 
-    public void paint(Graphics g) {
-        doToEachCell((Cell c) -> c.paint(g));
+    public void paint(Graphics g, int width, int height) {
+        g.setFont(new Font("Arial", Font.PLAIN, 15));      
+        g.setColor(Color.blue);
+        if(gameFinished) {
+            g.drawString("Correct word was: ", width - (width/6 * 2),50);
+            g.drawString(wordToGuess, width - (width/6 * 2),70);
+        } else {
+            g.drawString("Keep guessing a word!", width - (width/6 * 2),50);
+        }
+        g.drawString("Win Streak!: " + String.valueOf(correctConseqGuess), width - (width/6 * 2), 100);
+        doToEachCell((Cell c) -> c.paint(g, width, height));
     }
 
     public void reset(){
@@ -54,9 +68,9 @@ public class Grid implements Iterable<Cell>{
      * @param func The `Cell` to `void` function to apply at each spot.
      */
     public void doToEachCell(Consumer<Cell> func) {
-        for (int i = 0; i < cells.length; i++) {
-            for (int j = 0; j < cells[i].length; j++) {
-                func.accept(cells[i][j]);
+        for(Cell cell[] : cells) {
+            for (Cell cellObj : cell) {
+                func.accept(cellObj);
             }
         }
     }
@@ -86,7 +100,7 @@ public class Grid implements Iterable<Cell>{
             
             //is the row full? If so, let's compare!
             if( activeColumn == cells[activeRow].length -1 && 
-                !cells[activeRow][activeColumn].getStoredCharacter().equals(" ")){
+                !" ".equals(cells[activeRow][activeColumn].getStoredCharacter())){
                 
                 if(checkActiveRowAgainstWord()){
                     //success!
@@ -95,6 +109,7 @@ public class Grid implements Iterable<Cell>{
                         cells[activeRow][i].setState(3);
                     }
                     gameFinished = true;
+                    correctConseqGuess++;
                 }else{
                     if(activeRow >= cells.length-1){
                         // run out of guesses to use
@@ -103,6 +118,7 @@ public class Grid implements Iterable<Cell>{
                             cells[activeRow][i].setState(4);
                         }
                         gameFinished = true;
+                        correctConseqGuess = 0;
                     }else{
                         //do stuff to highlihgt correct characters
                         applyHighlightingToCurrentRow();
